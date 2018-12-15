@@ -1,11 +1,7 @@
 <?php
 
 setlocale(LC_TIME, 'en_US');
-echo(strftime("%A, %d %B, %G\n"));
-
-//revisited version that returns the same result:
-
-echo(date("l, d F, o\n"));
+echo(date('l, d F, Y') . PHP_EOL);
 
 /* Write program, that will print time in format:
 Wednesday, 22 November, 2018
