@@ -1,6 +1,25 @@
 <?php
 
-//NOT READY YET
+class StudentException extends Exception
+{
+
+}
+
+class GenderException extends StudentException
+{
+    protected $message = 'Gender can be only female or male' . PHP_EOL;
+}
+
+class StatusException extends StudentException
+{
+    protected $message = 'Set status to freshman, sophomore, junior or senior' . PHP_EOL;
+}
+
+class GpaException extends StudentException
+{
+    protected $message = 'The highest possible GPA is a 4.0' . PHP_EOL;
+}
+
 
 class Student
 {
@@ -18,48 +37,73 @@ class Student
     {
         $this->firstName = $firstName;
         $this->lastName = $lastName;
-        $this->gender = setGender($gender);
-        $this->status = setStatus($status);
-        $this->gpa = setGpa($gpa);
+
+        try {
+            $this->setGender($gender);
+        } catch (GenderException $e) {
+            die($e->getMessage());
+        }
+
+        try {
+            $this->setStatus($status);
+        } catch (StudentException $e) {
+            die($e->getMessage());
+        }
+
+        try {
+            $this->setGpa($gpa);
+        } catch (GpaException $e) {
+            die($e->getMessage());
+        }
     }
 
     protected function setGender($gender)
     {
         if (in_array($gender, self::GENDER_RANGE, true)) {
-            throw new Exception('Set male or female for gender');
+            throw new GenderException;
         }
         $this->gender = $gender;
-        return $this;
     }
 
     protected function setStatus($status)
     {
         if (in_array($status, self::STATUS_RANGE, true)) {
-            throw new Exception('Set status to freshman, sophomore, junior or senior');
+            throw new StatusException;
         }
         $this->status = $status;
-        return $this;
     }
 
     protected function setGpa($gpa)
     {
         if ($gpa > self::MAX_GPA) {
-            throw new Exception('The highest possible GPA is a 4.0');
+            throw new GpaException;
         }
 
         $this->gpa = $gpa;
-        return $this;
     }
 
-    public function getGender() {
+    public function getFirstName()
+    {
+        return $this->firstName;
+    }
+
+    public function getLastName()
+    {
+        return $this->lastName;
+    }
+
+    public function getGender()
+    {
         return $this->gender;
     }
 
-    public function getStatus() {
+    public function getStatus()
+    {
         return $this->status;
     }
 
-    public function getGpa() {
+    public function getGpa()
+    {
         return $this->gpa;
     }
 
@@ -80,19 +124,15 @@ class Student
     }
 }
 
-$inputStudents = [
-    ['firstName' => 'Mike', 'lastName' => 'Barnes', 'gender' => 'male', 'status' => 'freshman', 'gpa' => 4],
-    ['firstName' => 'Jim', 'lastName' => 'Nickerson', 'gender' => 'helicopter', 'status' => 'sophomore', 'gpa' => 3],
-    ['firstName' => 'Jack', 'lastName' => 'Indabox', 'gender' => 'male', 'status' => 'junior', 'gpa' => 2.5],
-    ['firstName' => 'Jane', 'lastName' => 'Miller', 'gender' => 'female', 'status' => 'senior', 'gpa' => 3.6],
-    ['firstName' => 'Mary', 'lastName' => 'Scott', 'gender' => 'female', 'status' => 'senior', 'gpa' => 2.7],
-];
-$inputStudyTime = [60, 100, 40, 300, 1000];
+$students = array(
+    new Student('Mike', 'Barnes', 'male', 'freshman', 4),
+    //new Student('Jim', 'Nickerson', 'male', 'sophomore', 3),
+    //new Student('Jack', 'Indabox', 'male', 'junior', 2.5),
+    //new Student('Jane', 'Miller', 'female', 'senior', 3.6),
+    //new Student('Mary', 'Scott', 'female', 'senior', 2.7)
+);
 
-
-$studentObj = new Student();
-$studentObj->gpa = Student::MAX_GPA;
-
+//$StudyTime = [60, 100, 40, 300, 1000];
 
 
 /*
