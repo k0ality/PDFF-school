@@ -37,48 +37,44 @@ class Student
     {
         $this->firstName = $firstName;
         $this->lastName = $lastName;
-
-        try {
-            $this->setGender($gender);
-        } catch (GenderException $e) {
-            die($e->getMessage());
-        }
-
-        try {
-            $this->setStatus($status);
-        } catch (StudentException $e) {
-            die($e->getMessage());
-        }
-
-        try {
-            $this->setGpa($gpa);
-        } catch (GpaException $e) {
-            die($e->getMessage());
-        }
+        $this->setGender($gender);
+        $this->setStatus($status);
+        $this->setGpa($gpa);
     }
 
     protected function setGender($gender)
     {
-        if (in_array($gender, self::GENDER_RANGE, true)) {
-            throw new GenderException;
+        try {
+            if (!in_array($gender, self::GENDER_RANGE, true)) {
+                throw new GenderException;
+            }
+        } catch (StudentException $e) {
+            die($e->getMessage());
         }
         $this->gender = $gender;
     }
 
     protected function setStatus($status)
     {
-        if (in_array($status, self::STATUS_RANGE, true)) {
-            throw new StatusException;
+        try {
+            if (!in_array($status, self::STATUS_RANGE, true)) {
+                throw new StatusException;
+            }
+        } catch (StudentException $e) {
+            die($e->getMessage());
         }
         $this->status = $status;
     }
 
     protected function setGpa($gpa)
     {
-        if ($gpa > self::MAX_GPA) {
-            throw new GpaException;
+        try {
+            if ($gpa > self::MAX_GPA) {
+                throw new GpaException;
+            }
+        } catch (StudentException $e) {
+            die($e->getMessage());
         }
-
         $this->gpa = $gpa;
     }
 
@@ -116,23 +112,79 @@ class Student
 
     public function studyTime($studyTime)
     {
+        if ($studyTime <= 0) {
+            die('Study time equal or below 0 minutes will get you expelled' . PHP_EOL);
+        }
+
         $this->gpa += log($studyTime);
 
         if ($this->gpa > self::MAX_GPA) {
             $this->gpa = self::MAX_GPA;
         };
     }
+
+    public function __destruct()
+    {
+        echo 'Destroying instance of ' . __CLASS__ . PHP_EOL;
+    }
+
+    public function __toString()
+    {
+        return 'Student Identity Card: ' . $this->getFirstName() . ' ' .  $this->getLastName() . PHP_EOL .
+            'Gender: ' . $this->getGender() . PHP_EOL . 'Status: ' . $this->getStatus() . PHP_EOL;
+    }
+
+    public function __debugInfo()
+    {
+        return [
+            'FirstName' => $this->getFirstName(),
+            'LastName' => $this->getLastName(),
+            'Gender' => $this->getGender(),
+            'Status' => $this->getStatus(),
+            'GPA' => $this->getGpa(),
+        ];
+    }
+
+    public function  __isset($property)
+    {
+        return isset($this->$property);
+    }
+
+    public function __unset($property)
+    {
+        unset($this->$property);
+    }
 }
 
-$students = array(
-    new Student('Mike', 'Barnes', 'male', 'freshman', 4),
-    //new Student('Jim', 'Nickerson', 'male', 'sophomore', 3),
-    //new Student('Jack', 'Indabox', 'male', 'junior', 2.5),
-    //new Student('Jane', 'Miller', 'female', 'senior', 3.6),
-    //new Student('Mary', 'Scott', 'female', 'senior', 2.7)
+$student_list = array(
+    $studentOne = new Student('Mike', 'Barnes', 'male', 'freshman', 4),
+    $studentTwo = new Student('Jim', 'Nickerson', 'male', 'sophomore', 3),
+    $studentThree = new Student('Jack', 'Indabox', 'male', 'junior', 2.5),
+    $studentFour = new Student('Jane', 'Miller', 'female', 'senior', 3.6),
+    $studentFive = new Student('Mary', 'Scott', 'female', 'senior', 2.7)
 );
 
-//$StudyTime = [60, 100, 40, 300, 1000];
+echo('<<< INITIAL <<<' . PHP_EOL);
+
+foreach ($student_list as $student_record) {
+    $student_record->showMyself();
+}
+
+echo('>>> AFTER STUDYING >>>' . PHP_EOL);
+
+$studentOne->studyTime(60);
+$studentTwo->studyTime(100);
+$studentThree->studyTime(40);
+$studentFour->studyTime(300);
+$studentFive->studyTime(1000);
+
+foreach ($student_list as $student_record) {
+    $student_record->showMyself();
+}
+
+echo $studentFour;
+var_dump($studentFive);
+
 
 
 /*
