@@ -56,13 +56,11 @@ class Student
 
     protected function setStatus($status)
     {
-        try {
+
             if (!in_array($status, self::STATUS_RANGE, true)) {
                 throw new StatusException;
             }
-        } catch (StudentException $e) {
-            die($e->getMessage());
-        }
+
         $this->status = $status;
     }
 
